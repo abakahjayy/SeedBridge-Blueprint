@@ -1,0 +1,3 @@
+- [SeedBridge custom Tabs](seedbridge-tabs.md) — custom Tabs has no `value` prop; use `active` on TabsTrigger instead
+- [api-client-react subpath export](api-client-subpath.md) — `./custom-fetch` must be declared in exports map for auth token injection to work
+- [Hook queryKey requirement](hook-query-options.md) — generated hooks require `queryKey` when passing a `query` options block

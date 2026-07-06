@@ -1,0 +1,165 @@
+SeedBridge
+Strategic Masterplan & Product Blueprint
+GDSS-PSInno AgriTech Innovation Challenge
+1
+Part I: The Challenge Brief
+The original parameters provided by the Ghana Data Science Summit (GDSS) and GIZ.
+Challenge Overview
+Challenge Title: Farmer-to-Buyer Digital Marketplace Platform
+Prizes:
+1st Prize: GHS 10,000 | 2nd Prize: GHS 7,000 | 3rd Prize: GHS 5,000
+The Problem
+Agriculture remains one of the most important sectors of Ghana’s economy, contributing
+approximately 20% of the country’s GDP and employing more than 30% of the national workforce.
+The sector is dominated by smallholder and small-to-medium scale farmers, with over 80% of
+farms in Ghana operating on less than five acres of land.
+Despite its importance, small-to-medium scale farmers growing perishable vegetables, particularly
+tomatoes, peppers, garden eggs, okra, and leafy greens face challenges in accessing reliable
+markets and fair pricing. The time-sensitive nature of perishable produce makes inefficiencies in
+market access especially costly.
+In addition, even when farmers successfully connect with buyers, transporting produce efficiently
+and affordably remains a major challenge. Poor logistics coordination, lack of reliable transport
+options, and fragmented delivery systems often lead to delays, spoilage, increased costs, and lost
+income.
+Data Impact: Ghana is estimated to lose between 20% and 50% of fruits and vegetables after
+harvest due to poor storage systems, transportation delays, and weak distribution networks. These
+losses are estimated to cost the country between $1.9 billion and $3 billion annually.
+At the same time, buyers such as retailers, restaurants, processors, exporters, and households
+struggle to identify trusted suppliers, compare prices, locate nearby produce, and coordinate timely
+delivery of goods.
+2
+Proposed Solution & Core Features
+Develop a digital platform that connects smallholder vegetable farmers directly to buyers through a
+mobile or web application, while also enabling efficient coordination of transport and delivery.
+Farmer Features: Registration, profile creation, produce listing (images, quantity, location,
+pricing), inventory updates, communication with buyers, ability to request transport.
+Buyer Features: Registration, search/filtering, direct ordering/negotiation, order history, delivery
+coordination/tracking.
+Logistics Features: Transport provider registration, booking system, matching farmers/buyers
+with nearby transport, delivery scheduling/route coordination, tracking, notifications.
+Generic Features: Product listing, geolocation, in-app messaging, rating system, mobile
+money/payment integration, dashboard monitoring.
+Deliverables & Timelines
+A working prototype or MVP (Frontend mobile/web + Backend/database system).
+A live demo of the platform workflow (registration, search, end-to-end marketplace operations).
+Bonus: Transport request and delivery/logistics coordination flow.
+Activity Dates
+Registration deadline 26 June 2026
+Challenge period 29 June – 10 July 2026
+First round of judging 13 July – 17 July 2026
+Final presentation & Awards 24 July 2026
+•
+•
+•
+•
+•
+•
+•
+3
+Part II: The SeedBridge Masterplan
+The strategic, gap-free blueprint to win the hackathon by solving the core issues of information
+asymmetry, empty-return transport costs, and perishability.
+1. Target Market Strategy
+Region: Eastern Region (Suhum / Yilo-Krobo)
+Target Crops: Tomatoes, Garden Eggs, and Okra
+Rationale: The Eastern Region is a major vegetable production hub located just 1.5 to 2 hours
+from Accra. However, due to poor feeder roads and uncoordinated logistics, post-harvest losses
+remain massive. Tomatoes are highly perishable, making them the ultimate stress-test for a
+logistics platform. Solving for tomatoes proves the platform's robustness.
+2. Core Innovations (The Winning Edge)
+1. Pre-Harvest Matching Engine (Eliminating Wait-Time Rot)
+The Gap: Waiting to find a buyer after harvesting guarantees post-harvest loss.
+The Solution: SeedBridge operates a predictive marketplace. Farmers upload expected
+yields and harvest dates up to two weeks in advance. Buyers place deposits to lock in the
+produce.
+Impact: Farmers harvest only what is sold, reducing wait-time PHL to near 0%.
+4
+2. "Milk-Run" & Backhaul Logistics
+The Gap: Trucks waste fuel driving empty to rural areas and making multiple small stops.
+The Solution: The app batches orders via Virtual Aggregation. Multiple farmers deliver to a
+central community pickup point at a scheduled time, allowing drivers to make a single stop.
+Furthermore, the Backhaul Coordination feature lets agro-chemical suppliers book empty
+trucks returning to the rural areas.
+Impact: Transport costs drop drastically for farmers as drivers monetize both legs of the
+journey.
+3. Co-Opting "Market Queens"
+The Gap: Tech often fails by trying to bypass traditional market authorities.
+The Solution: SeedBridge embraces them via an Agent/Aggregator Dashboard. Traditional
+market queens can log in to aggregate demand for multiple street vendors, utilizing their
+existing capital and trust.
+Impact: Instant, massive user adoption without fighting existing cultural market structures.
+4. "Fresh Rescue" Algorithmic Pricing
+The Gap: Unsold tomatoes rot completely, yielding zero revenue.
+The Solution: When produce nears its maximum shelf-life (e.g., 48 hours post-harvest), the
+platform automatically applies an algorithmic discount, shifting the listing to a "Fresh Rescue"
+tier.
+Impact: Commercial agro-processors (tomato paste factories) get instant alerts for
+processing-grade produce at cheap rates, allowing the farmer to recover some capital.
+5. Mobile Money (MoMo) Escrow
+The Gap: Lack of trust between remote farmers and urban buyers.
+The Solution: A 3-way escrow. Buyer pays via MoMo $ ightarrow$ Funds lock $ ightarrow$
+Driver picks up $ ightarrow$ Delivery confirmed $ ightarrow$ Escrow splits and releases
+funds instantly (e.g., 85% Farmer, 15% Driver).
+5
+3. Application Interfaces & Architecture
+SeedBridge relies on a Headless/Decoupled Architecture to ensure rapid development and high
+performance.
+User / Role Tech Interface Primary Functions
+Smallholder
+Farmer
+USSD Simulator
+(`*713*55#`) & Ultra-light
+PWA
+List future crops, view MoMo balance,
+receive pickup schedules via SMS. Low-tech
+barrier.
+Buyer / Market
+Queen
+Web/Tablet Dashboard
+(Next.js)
+Browse marketplace, filter by crop/region,
+bulk purchase cart, track driver ETA in realtime.
+Driver /
+Logistics
+Mobile App Interface View aggregated "Milk-Run" routes, 1-click
+accept delivery, notify buyers of transit
+status.
+Frontend Stack (UI/UX Focus)
+Framework: Next.js (App Router) for superior routing and rendering.
+Styling: Tailwind CSS paired with shadcn/ui for rapid, accessible, and professional components
+without writing CSS from scratch.
+Data Fetching & State: TanStack Query (React Query) to seamlessly consume APIs, manage
+loading states, and handle caching.
+Form Validation: React Hook Form + Zod to ensure clean database entries.
+Backend Stack (Data & API Focus)
+Framework: Node.js / Express acting as the standalone API server.
+Database: MongoDB for flexible schema design (ideal for rapid hackathon changes).
+Integration: Exposing REST endpoints (`/api/produce`, `/api/logistics`) for the Next.js frontend
+to consume via Server Components.
+•
+•
+•
+•
+•
+•
+•
+6
+4. Development Sprint Schedule
+With a strict July 10th deadline, the frontend and backend must be developed concurrently using
+mock JSON data before final integration.
+Phase 1: Scaffolding & Setup (June 30 - July 1): Initialize Next.js, Express, and define JSON
+data structures. Build mock USSD flows.
+Phase 2: Core Workflows (July 2 - July 4): Develop Buyer Marketplace (cards, search, filters)
+and Farmer Dashboard. Mobile-first UI enforcement.
+Phase 3: The Logistics Bonus (July 5 - July 6): Construct the Driver Feed and Backhaul logic
+—the primary differentiator for the judges.
+Phase 4: API Integration (July 7 - July 8): Replace frontend mock data with live Express
+endpoints. Resolve CORS and state bugs.
+Phase 5: Polish & Demo (July 9 - July 10): Code freeze. Refine UI, conduct end-to-end
+testing, and record the flawless workflow demo for submission.
+•
+•
+•
+•
+•
+7

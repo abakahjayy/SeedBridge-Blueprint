@@ -3,20 +3,31 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SeedBridge – Farmer-to-Buyer Digital Marketplace API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: produce
+    description: Produce listings
+  - name: orders
+    description: Orders
+  - name: logistics
+    description: Transport & logistics
+  - name: dashboard
+    description: Dashboard summaries
+  - name: users
+    description: User profiles
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +35,560 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Auth ────────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ─── Users ───────────────────────────────────────────────────────────────────
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ─── Produce ─────────────────────────────────────────────────────────────────
+  /produce:
+    get:
+      operationId: listProduce
+      tags: [produce]
+      summary: List produce listings (marketplace)
+      parameters:
+        - name: crop
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: freshnessAlert
+          in: query
+          schema:
+            type: boolean
+        - name: farmerId
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Produce listing results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProduceListResult"
+    post:
+      operationId: createProduce
+      tags: [produce]
+      summary: Create a new produce listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProduceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produce"
+
+  /produce/fresh-rescue:
+    get:
+      operationId: listFreshRescue
+      tags: [produce]
+      summary: List Fresh Rescue tier listings (near shelf-life, discounted)
+      parameters:
+        - name: crop
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Fresh Rescue listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Produce"
+
+  /produce/pre-harvest:
+    get:
+      operationId: listPreHarvest
+      tags: [produce]
+      summary: List pre-harvest listings (accepting deposits)
+      parameters:
+        - name: crop
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: harvestBefore
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pre-harvest listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Produce"
+
+  /produce/{id}:
+    get:
+      operationId: getProduce
+      tags: [produce]
+      summary: Get produce listing detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Produce detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produce"
+    patch:
+      operationId: updateProduce
+      tags: [produce]
+      summary: Update produce listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProduceUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produce"
+    delete:
+      operationId: deleteProduce
+      tags: [produce]
+      summary: Delete produce listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # ─── Orders ──────────────────────────────────────────────────────────────────
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List orders (for current user)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  # ─── Logistics ───────────────────────────────────────────────────────────────
+  /logistics:
+    get:
+      operationId: listLogistics
+      tags: [logistics]
+      summary: List logistics/transport requests
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: driverId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Logistics list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogisticsRequest"
+    post:
+      operationId: createLogistics
+      tags: [logistics]
+      summary: Create a transport request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogisticsInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogisticsRequest"
+
+  /logistics/milk-run:
+    get:
+      operationId: getMilkRunRoutes
+      tags: [logistics]
+      summary: Get aggregated Milk-Run routes for drivers
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Milk-run route bundles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MilkRunRoute"
+
+  /logistics/backhaul:
+    get:
+      operationId: listBackhaulSlots
+      tags: [logistics]
+      summary: List available backhaul slots (returning trucks)
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Backhaul slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BackhaulSlot"
+
+  /logistics/{id}:
+    get:
+      operationId: getLogistics
+      tags: [logistics]
+      summary: Get logistics request detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Logistics detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogisticsRequest"
+    patch:
+      operationId: updateLogisticsStatus
+      tags: [logistics]
+      summary: Accept/update delivery status (driver action)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogisticsStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogisticsRequest"
+
+  # ─── Dashboard ───────────────────────────────────────────────────────────────
+  /dashboard/farmer:
+    get:
+      operationId: getFarmerDashboard
+      tags: [dashboard]
+      summary: Farmer dashboard summary
+      responses:
+        "200":
+          description: Farmer stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FarmerDashboard"
+
+  /dashboard/buyer:
+    get:
+      operationId: getBuyerDashboard
+      tags: [dashboard]
+      summary: Buyer dashboard summary
+      responses:
+        "200":
+          description: Buyer stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuyerDashboard"
+
+  /dashboard/driver:
+    get:
+      operationId: getDriverDashboard
+      tags: [dashboard]
+      summary: Driver dashboard summary
+      responses:
+        "200":
+          description: Driver stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverDashboard"
+
+  /dashboard/market-overview:
+    get:
+      operationId: getMarketOverview
+      tags: [dashboard]
+      summary: Live market overview – prices, crop availability, region activity
+      responses:
+        "200":
+          description: Market overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketOverview"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +596,577 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required: [success]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    # ── Auth ────────────────────────────────────────────────────────────────────
+    RegisterInput:
+      type: object
+      required: [name, phone, role, password]
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [farmer, buyer, driver, agent]
+        password:
+          type: string
+        region:
+          type: ["string", "null"]
+
+    LoginInput:
+      type: object
+      required: [phone, password]
+      properties:
+        phone:
+          type: string
+        password:
+          type: string
+
+    AuthResult:
+      type: object
+      required: [user, token]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    # ── Users ───────────────────────────────────────────────────────────────────
+    User:
+      type: object
+      required: [id, name, phone, role]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [farmer, buyer, driver, agent]
+        region:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        rating:
+          type: ["number", "null"]
+        totalRatings:
+          type: integer
+        momoBalance:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+
+    # ── Produce ─────────────────────────────────────────────────────────────────
+    Produce:
+      type: object
+      required: [id, farmerId, farmerName, crop, quantityKg, pricePerKg, region, harvestDate, status, createdAt]
+      properties:
+        id:
+          type: string
+        farmerId:
+          type: string
+        farmerName:
+          type: string
+        farmerRating:
+          type: ["number", "null"]
+        crop:
+          type: string
+          enum: [tomatoes, garden_eggs, okra, peppers, leafy_greens, other]
+        quantityKg:
+          type: number
+        availableKg:
+          type: number
+        pricePerKg:
+          type: number
+        originalPricePerKg:
+          type: ["number", "null"]
+        region:
+          type: string
+        community:
+          type: ["string", "null"]
+        harvestDate:
+          type: string
+        isPreHarvest:
+          type: boolean
+        freshnessAlert:
+          type: boolean
+        hoursToExpiry:
+          type: ["integer", "null"]
+        status:
+          type: string
+          enum: [available, partially_sold, sold_out, fresh_rescue, cancelled]
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        depositRequired:
+          type: ["number", "null"]
+        pickupPoint:
+          type: ["string", "null"]
+        scheduledPickupTime:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ProduceListResult:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Produce"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ProduceInput:
+      type: object
+      required: [crop, quantityKg, pricePerKg, region, harvestDate]
+      properties:
+        crop:
+          type: string
+          enum: [tomatoes, garden_eggs, okra, peppers, leafy_greens, other]
+        quantityKg:
+          type: number
+        pricePerKg:
+          type: number
+        region:
+          type: string
+        community:
+          type: string
+        harvestDate:
+          type: string
+        isPreHarvest:
+          type: boolean
+        description:
+          type: string
+        imageUrl:
+          type: string
+        depositRequired:
+          type: number
+        pickupPoint:
+          type: string
+        scheduledPickupTime:
+          type: string
+
+    ProduceUpdate:
+      type: object
+      properties:
+        quantityKg:
+          type: number
+        pricePerKg:
+          type: number
+        status:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        scheduledPickupTime:
+          type: string
+        harvestDate:
+          type: string
+
+    # ── Orders ──────────────────────────────────────────────────────────────────
+    Order:
+      type: object
+      required: [id, buyerId, buyerName, produceId, crop, quantityKg, totalAmount, status, createdAt]
+      properties:
+        id:
+          type: string
+        buyerId:
+          type: string
+        buyerName:
+          type: string
+        farmerId:
+          type: string
+        farmerName:
+          type: string
+        produceId:
+          type: string
+        crop:
+          type: string
+        quantityKg:
+          type: number
+        pricePerKg:
+          type: number
+        totalAmount:
+          type: number
+        depositPaid:
+          type: ["number", "null"]
+        status:
+          type: string
+          enum: [pending, deposit_paid, confirmed, in_transit, delivered, completed, cancelled, disputed]
+        paymentStatus:
+          type: string
+          enum: [unpaid, deposit_held, escrow_held, released, refunded]
+        deliveryAddress:
+          type: ["string", "null"]
+        logisticsId:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    OrderInput:
+      type: object
+      required: [produceId, quantityKg, deliveryAddress]
+      properties:
+        produceId:
+          type: string
+        quantityKg:
+          type: number
+        deliveryAddress:
+          type: string
+        isDeposit:
+          type: boolean
+        notes:
+          type: string
+
+    OrderStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [confirmed, in_transit, delivered, completed, cancelled, disputed]
+        notes:
+          type: string
+
+    # ── Logistics ───────────────────────────────────────────────────────────────
+    LogisticsRequest:
+      type: object
+      required: [id, requesterId, pickupRegion, dropoffLocation, scheduledDate, status, createdAt]
+      properties:
+        id:
+          type: string
+        requesterId:
+          type: string
+        requesterName:
+          type: string
+        driverId:
+          type: ["string", "null"]
+        driverName:
+          type: ["string", "null"]
+        driverPhone:
+          type: ["string", "null"]
+        orderId:
+          type: ["string", "null"]
+        pickupRegion:
+          type: string
+        pickupCommunity:
+          type: ["string", "null"]
+        pickupPoint:
+          type: ["string", "null"]
+        dropoffLocation:
+          type: string
+        scheduledDate:
+          type: string
+        scheduledTime:
+          type: ["string", "null"]
+        totalWeightKg:
+          type: ["number", "null"]
+        estimatedFee:
+          type: ["number", "null"]
+        agreedFee:
+          type: ["number", "null"]
+        status:
+          type: string
+          enum: [pending, accepted, picked_up, in_transit, delivered, completed, cancelled]
+        trackingNote:
+          type: ["string", "null"]
+        isMilkRun:
+          type: boolean
+        isBackhaul:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    LogisticsInput:
+      type: object
+      required: [pickupRegion, dropoffLocation, scheduledDate]
+      properties:
+        orderId:
+          type: string
+        pickupRegion:
+          type: string
+        pickupCommunity:
+          type: string
+        pickupPoint:
+          type: string
+        dropoffLocation:
+          type: string
+        scheduledDate:
+          type: string
+        scheduledTime:
+          type: string
+        totalWeightKg:
+          type: number
+        isBackhaul:
+          type: boolean
+
+    LogisticsStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [accepted, picked_up, in_transit, delivered, completed, cancelled]
+        trackingNote:
+          type: string
+        agreedFee:
+          type: number
+
+    MilkRunRoute:
+      type: object
+      required: [id, region, scheduledDate, stops, totalWeightKg, estimatedFee]
+      properties:
+        id:
+          type: string
+        region:
+          type: string
+        scheduledDate:
+          type: string
+        stops:
+          type: array
+          items:
+            $ref: "#/components/schemas/MilkRunStop"
+        totalWeightKg:
+          type: number
+        estimatedFee:
+          type: number
+        status:
+          type: string
+
+    MilkRunStop:
+      type: object
+      required: [community, pickupPoint, farmers, weightKg]
+      properties:
+        community:
+          type: string
+        pickupPoint:
+          type: string
+        farmers:
+          type: array
+          items:
+            type: string
+        weightKg:
+          type: number
+        scheduledTime:
+          type: ["string", "null"]
+
+    BackhaulSlot:
+      type: object
+      required: [id, driverName, returnRegion, departureLocation, scheduledDate, availableCapacityKg, feePerKg]
+      properties:
+        id:
+          type: string
+        driverName:
+          type: string
+        driverPhone:
+          type: string
+        returnRegion:
+          type: string
+        departureLocation:
+          type: string
+        scheduledDate:
+          type: string
+        scheduledTime:
+          type: ["string", "null"]
+        availableCapacityKg:
+          type: number
+        feePerKg:
+          type: number
+
+    # ── Dashboards ──────────────────────────────────────────────────────────────
+    FarmerDashboard:
+      type: object
+      required: [totalListings, activeListings, totalRevenue, pendingOrders, completedOrders, freshRescueCount, upcomingPickups]
+      properties:
+        totalListings:
+          type: integer
+        activeListings:
+          type: integer
+        totalRevenue:
+          type: number
+        momoBalance:
+          type: number
+        pendingOrders:
+          type: integer
+        completedOrders:
+          type: integer
+        freshRescueCount:
+          type: integer
+        upcomingPickups:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpcomingPickup"
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+        cropBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CropStat"
+
+    BuyerDashboard:
+      type: object
+      required: [totalOrders, activeOrders, totalSpent, recentOrders, freshRescueAlerts]
+      properties:
+        totalOrders:
+          type: integer
+        activeOrders:
+          type: integer
+        totalSpent:
+          type: number
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+        freshRescueAlerts:
+          type: integer
+        favoriteRegions:
+          type: array
+          items:
+            type: string
+        savedFarmers:
+          type: integer
+
+    DriverDashboard:
+      type: object
+      required: [totalDeliveries, activeDeliveries, totalEarnings, availableRoutes, completedToday]
+      properties:
+        totalDeliveries:
+          type: integer
+        activeDeliveries:
+          type: integer
+        totalEarnings:
+          type: number
+        momoBalance:
+          type: number
+        availableRoutes:
+          type: integer
+        completedToday:
+          type: integer
+        milkRunsAvailable:
+          type: integer
+        backhaulSlots:
+          type: integer
+        recentDeliveries:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogisticsRequest"
+
+    MarketOverview:
+      type: object
+      required: [activeFarmers, activeListings, totalOrdersToday, cropPrices, regionActivity]
+      properties:
+        activeFarmers:
+          type: integer
+        activeListings:
+          type: integer
+        totalOrdersToday:
+          type: integer
+        freshRescueActive:
+          type: integer
+        cropPrices:
+          type: array
+          items:
+            $ref: "#/components/schemas/CropPrice"
+        regionActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegionStat"
+
+    UpcomingPickup:
+      type: object
+      required: [orderId, crop, quantityKg, buyerName, scheduledDate]
+      properties:
+        orderId:
+          type: string
+        crop:
+          type: string
+        quantityKg:
+          type: number
+        buyerName:
+          type: string
+        scheduledDate:
+          type: string
+        pickupPoint:
+          type: ["string", "null"]
+
+    CropStat:
+      type: object
+      required: [crop, totalKg, revenue, orders]
+      properties:
+        crop:
+          type: string
+        totalKg:
+          type: number
+        revenue:
+          type: number
+        orders:
+          type: integer
+
+    CropPrice:
+      type: object
+      required: [crop, avgPricePerKg, minPrice, maxPrice, trend]
+      properties:
+        crop:
+          type: string
+        avgPricePerKg:
+          type: number
+        minPrice:
+          type: number
+        maxPrice:
+          type: number
+        trend:
+          type: string
+          enum: [up, down, stable]
+
+    RegionStat:
+      type: object
+      required: [region, activeFarmers, activeListings, totalOrders]
+      properties:
+        region:
+          type: string
+        activeFarmers:
+          type: integer
+        activeListings:
+          type: integer
+        totalOrders:
+          type: integer
