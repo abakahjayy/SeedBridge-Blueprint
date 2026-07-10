@@ -84,7 +84,7 @@ export const getHealthCheckUrl = () => {
 
 
 
-  return `/api/healthz`
+  return `/api/v1/healthz`
 }
 
 /**
@@ -107,7 +107,7 @@ export const healthCheck = async ( options?: RequestInit): Promise<HealthStatus>
 
 export const getHealthCheckQueryKey = () => {
     return [
-    `/api/healthz`
+    `/api/v1/healthz`
     ] as const;
     }
 
@@ -161,7 +161,7 @@ export const getRegisterUrl = () => {
 
 
 
-  return `/api/auth/register`
+  return `/api/v1/auth/signup`
 }
 
 /**
@@ -231,7 +231,7 @@ export const getLoginUrl = () => {
 
 
 
-  return `/api/auth/login`
+  return `/api/v1/auth/login`
 }
 
 /**
@@ -371,7 +371,7 @@ export const getGetMeUrl = () => {
 
 
 
-  return `/api/auth/me`
+  return `/api/v1/auth/me`
 }
 
 /**
@@ -394,7 +394,7 @@ export const getMe = async ( options?: RequestInit): Promise<User> => {
 
 export const getGetMeQueryKey = () => {
     return [
-    `/api/auth/me`
+    `/api/v1/auth/me`
     ] as const;
     }
 
@@ -448,7 +448,7 @@ export const getGetUserUrl = (id: string,) => {
 
 
 
-  return `/api/users/${id}`
+  return `/api/v1/users/${id}`
 }
 
 /**
@@ -471,7 +471,7 @@ export const getUser = async (id: string, options?: RequestInit): Promise<User> 
 
 export const getGetUserQueryKey = (id: string,) => {
     return [
-    `/api/users/${id}`
+    `/api/v1/users/${id}`
     ] as const;
     }
 
@@ -532,7 +532,7 @@ export const getListProduceUrl = (params?: ListProduceParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/produce?${stringifiedParams}` : `/api/produce`
+  return stringifiedParams.length > 0 ? `/api/v1/produce?${stringifiedParams}` : `/api/v1/produce`
 }
 
 /**
@@ -555,7 +555,7 @@ export const listProduce = async (params?: ListProduceParams, options?: RequestI
 
 export const getListProduceQueryKey = (params?: ListProduceParams,) => {
     return [
-    `/api/produce`, ...(params ? [params] : [])
+    `/api/v1/produce`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -609,7 +609,7 @@ export const getCreateProduceUrl = () => {
 
 
 
-  return `/api/produce`
+  return `/api/v1/produce`
 }
 
 /**
@@ -686,7 +686,7 @@ export const getListFreshRescueUrl = (params?: ListFreshRescueParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/produce/fresh-rescue?${stringifiedParams}` : `/api/produce/fresh-rescue`
+  return stringifiedParams.length > 0 ? `/api/v1/produce/fresh-rescue?${stringifiedParams}` : `/api/produce/fresh-rescue`
 }
 
 /**
@@ -770,7 +770,7 @@ export const getListPreHarvestUrl = (params?: ListPreHarvestParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/produce/pre-harvest?${stringifiedParams}` : `/api/produce/pre-harvest`
+  return stringifiedParams.length > 0 ? `/api/v1/produce/pre-harvest?${stringifiedParams}` : `/api/produce/pre-harvest`
 }
 
 /**
@@ -793,7 +793,7 @@ export const listPreHarvest = async (params?: ListPreHarvestParams, options?: Re
 
 export const getListPreHarvestQueryKey = (params?: ListPreHarvestParams,) => {
     return [
-    `/api/produce/pre-harvest`, ...(params ? [params] : [])
+    `/api/v1/produce/pre-harvest`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -847,7 +847,7 @@ export const getGetProduceUrl = (id: string,) => {
 
 
 
-  return `/api/produce/${id}`
+  return `/api/v1/produce/${id}`
 }
 
 /**
@@ -870,7 +870,7 @@ export const getProduce = async (id: string, options?: RequestInit): Promise<Pro
 
 export const getGetProduceQueryKey = (id: string,) => {
     return [
-    `/api/produce/${id}`
+    `/api/v1/produce/${id}`
     ] as const;
     }
 
@@ -924,7 +924,7 @@ export const getUpdateProduceUrl = (id: string,) => {
 
 
 
-  return `/api/produce/${id}`
+  return `/api/v1/produce/${id}`
 }
 
 /**
@@ -995,7 +995,7 @@ export const getDeleteProduceUrl = (id: string,) => {
 
 
 
-  return `/api/produce/${id}`
+  return `/api/v1/produce/${id}`
 }
 
 /**
@@ -1072,7 +1072,7 @@ export const getListOrdersUrl = (params?: ListOrdersParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/orders?${stringifiedParams}` : `/api/orders`
+  return stringifiedParams.length > 0 ? `/api/v1/orders?${stringifiedParams}` : `/api/v1/orders`
 }
 
 /**
@@ -1095,7 +1095,7 @@ export const listOrders = async (params?: ListOrdersParams, options?: RequestIni
 
 export const getListOrdersQueryKey = (params?: ListOrdersParams,) => {
     return [
-    `/api/orders`, ...(params ? [params] : [])
+    `/api/v1/orders`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -1149,7 +1149,7 @@ export const getCreateOrderUrl = () => {
 
 
 
-  return `/api/orders`
+  return `/api/v1/orders`
 }
 
 /**
@@ -1219,7 +1219,7 @@ export const getGetOrderUrl = (id: string,) => {
 
 
 
-  return `/api/orders/${id}`
+  return `/api/v1/orders/${id}`
 }
 
 /**
@@ -1242,7 +1242,7 @@ export const getOrder = async (id: string, options?: RequestInit): Promise<Order
 
 export const getGetOrderQueryKey = (id: string,) => {
     return [
-    `/api/orders/${id}`
+    `/api/v1/orders/${id}`
     ] as const;
     }
 
@@ -1296,7 +1296,7 @@ export const getUpdateOrderStatusUrl = (id: string,) => {
 
 
 
-  return `/api/orders/${id}/status`
+  return `/api/v1/orders/${id}/status`
 }
 
 /**
@@ -1397,7 +1397,7 @@ export const listLogistics = async (params?: ListLogisticsParams, options?: Requ
 
 export const getListLogisticsQueryKey = (params?: ListLogisticsParams,) => {
     return [
-    `/api/logistics`, ...(params ? [params] : [])
+    `/api/v1/logistics`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -1451,7 +1451,7 @@ export const getCreateLogisticsUrl = () => {
 
 
 
-  return `/api/logistics`
+  return `/api/v1/logistics`
 }
 
 /**
@@ -1528,7 +1528,7 @@ export const getGetMilkRunRoutesUrl = (params?: GetMilkRunRoutesParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/logistics/milk-run?${stringifiedParams}` : `/api/logistics/milk-run`
+  return stringifiedParams.length > 0 ? `/api/v1/logistics/milk-run?${stringifiedParams}` : `/api/logistics/milk-run`
 }
 
 /**
@@ -1551,7 +1551,7 @@ export const getMilkRunRoutes = async (params?: GetMilkRunRoutesParams, options?
 
 export const getGetMilkRunRoutesQueryKey = (params?: GetMilkRunRoutesParams,) => {
     return [
-    `/api/logistics/milk-run`, ...(params ? [params] : [])
+    `/api/v1/logistics/milk-run`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -1612,7 +1612,7 @@ export const getListBackhaulSlotsUrl = (params?: ListBackhaulSlotsParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/logistics/backhaul?${stringifiedParams}` : `/api/logistics/backhaul`
+  return stringifiedParams.length > 0 ? `/api/v1/logistics/backhaul?${stringifiedParams}` : `/api/logistics/backhaul`
 }
 
 /**
@@ -1635,7 +1635,7 @@ export const listBackhaulSlots = async (params?: ListBackhaulSlotsParams, option
 
 export const getListBackhaulSlotsQueryKey = (params?: ListBackhaulSlotsParams,) => {
     return [
-    `/api/logistics/backhaul`, ...(params ? [params] : [])
+    `/api/v1/logistics/backhaul`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -1689,7 +1689,7 @@ export const getGetLogisticsUrl = (id: string,) => {
 
 
 
-  return `/api/logistics/${id}`
+  return `/api/v1/logistics/${id}`
 }
 
 /**
@@ -1712,7 +1712,7 @@ export const getLogistics = async (id: string, options?: RequestInit): Promise<L
 
 export const getGetLogisticsQueryKey = (id: string,) => {
     return [
-    `/api/logistics/${id}`
+    `/api/v1/logistics/${id}`
     ] as const;
     }
 
@@ -1766,7 +1766,7 @@ export const getUpdateLogisticsStatusUrl = (id: string,) => {
 
 
 
-  return `/api/logistics/${id}`
+  return `/api/v1/logistics/${id}`
 }
 
 /**
@@ -1837,7 +1837,7 @@ export const getGetFarmerDashboardUrl = () => {
 
 
 
-  return `/api/dashboard/farmer`
+  return `/api/v1/dashboard/farmer`
 }
 
 /**
@@ -1860,7 +1860,7 @@ export const getFarmerDashboard = async ( options?: RequestInit): Promise<Farmer
 
 export const getGetFarmerDashboardQueryKey = () => {
     return [
-    `/api/dashboard/farmer`
+    `/api/v1/dashboard/farmer`
     ] as const;
     }
 
@@ -1914,7 +1914,7 @@ export const getGetBuyerDashboardUrl = () => {
 
 
 
-  return `/api/dashboard/buyer`
+  return `/api/v1/dashboard/buyer`
 }
 
 /**
@@ -1937,7 +1937,7 @@ export const getBuyerDashboard = async ( options?: RequestInit): Promise<BuyerDa
 
 export const getGetBuyerDashboardQueryKey = () => {
     return [
-    `/api/dashboard/buyer`
+    `/api/v1/dashboard/buyer`
     ] as const;
     }
 
@@ -1991,7 +1991,7 @@ export const getGetDriverDashboardUrl = () => {
 
 
 
-  return `/api/dashboard/driver`
+  return `/api/v1/dashboard/driver`
 }
 
 /**
@@ -2014,7 +2014,7 @@ export const getDriverDashboard = async ( options?: RequestInit): Promise<Driver
 
 export const getGetDriverDashboardQueryKey = () => {
     return [
-    `/api/dashboard/driver`
+    `/api/v1/dashboard/driver`
     ] as const;
     }
 
@@ -2068,7 +2068,7 @@ export const getGetMarketOverviewUrl = () => {
 
 
 
-  return `/api/dashboard/market-overview`
+  return `/api/v1/dashboard/market-overview`
 }
 
 /**
@@ -2091,7 +2091,7 @@ export const getMarketOverview = async ( options?: RequestInit): Promise<MarketO
 
 export const getGetMarketOverviewQueryKey = () => {
     return [
-    `/api/dashboard/market-overview`
+    `/api/v1/dashboard/market-overview`
     ] as const;
     }
 
