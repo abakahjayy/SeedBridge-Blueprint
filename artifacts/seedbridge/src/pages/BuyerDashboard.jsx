@@ -90,7 +90,7 @@ function BuyerDashboard() {
               </CardHeader>
               <CardContent className="p-0">
                 {dashboard.recentOrders && dashboard.recentOrders.length > 0 ? <div className="divide-y">
-                    {dashboard.recentOrders.map((order) => <Link key={order.id} href={`/orders/${order.id}`}>
+                    {dashboard.recentOrders.map((order) => <Link key={order.id || order._id} href={`/orders/${order.id || order._id}`}>
                         <div className="p-4 hover:bg-muted/50 transition-colors flex items-center justify-between group">
                           <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-lg bg-secondary/10 flex items-center justify-center text-xl shadow-sm border border-secondary/20">

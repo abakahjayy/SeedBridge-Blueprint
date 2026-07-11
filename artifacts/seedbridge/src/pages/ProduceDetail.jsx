@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useGetProduce, useCreateOrder, getGetProduceQueryKey } from "@workspace/api-client-react";
+import { useGetProduce, getGetProduceQueryKey } from "@workspace/api-client-react";
+import { useInitializeCheckout } from "@/hooks/use-payment";
 import { useParams, Link, useLocation } from "wouter";
 import { Card, CardContent, Button, Badge, Skeleton, Label, Input } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +23,7 @@ function ProduceDetail() {
   const { data: produce, isLoading } = useGetProduce(id || "", {
     query: { enabled: !!id, queryKey: getGetProduceQueryKey(id || "") }
   });
-  const createOrder = useCreateOrder();
+  const initializeCheckout = useInitializeCheckout();
   const [orderQty, setOrderQty] = useState(0);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   React.useEffect(() => {
@@ -61,17 +62,16 @@ function ProduceDetail() {
       toast({ title: "Missing info", description: "Please provide a delivery address.", variant: "destructive" });
       return;
     }
-    createOrder.mutate({
-      data: {
-        produceId: produce.id,
-        quantityKg: orderQty,
-        deliveryAddress: deliveryAddress || produce.pickupPoint || "Farm Gate",
-        isDeposit: isPreHarvest
-      }
+    initializeCheckout.mutate({
+      produceId: produce.id,
+      quantityKg: orderQty,
+      deliveryAddress: deliveryAddress || produce.pickupPoint || "Farm Gate",
+      isDeposit: isPreHarvest
     }, {
-      onSuccess: (order) => {
-        toast({ title: "Order Placed", description: "Your order has been successfully placed via MoMo Escrow." });
-        setLocation(`/orders/${order.id}`);
+      onSuccess: (data) => {
+        // Full-page redirect — Paystack's checkout is an external hosted
+        // page, not a route in this app, so this can't be a SPA navigation.
+        window.location.href = data.authorizationUrl;
       },
       onError: (err) => {
         toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -235,10 +235,10 @@ function ProduceDetail() {
                   <Button
     size="lg"
     onClick={handleOrder}
-    disabled={createOrder.isPending || orderQty <= 0}
+    disabled={initializeCheckout.isPending || orderQty <= 0}
     className="px-8 shadow-md"
   >
-                    {createOrder.isPending ? "Processing..." : isPreHarvest ? "Pay Deposit" : "Pay via Escrow"}
+                    {initializeCheckout.isPending ? "Redirecting to payment..." : isPreHarvest ? "Pay Deposit" : "Pay via Escrow"}
                   </Button>
                 </div>
               </CardContent>

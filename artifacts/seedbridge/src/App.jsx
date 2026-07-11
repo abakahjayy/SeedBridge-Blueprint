@@ -14,6 +14,7 @@ import { DriverDashboard } from "@/pages/DriverDashboard";
 import { OrderList } from "@/pages/OrderList";
 import { OrderDetail } from "@/pages/OrderDetail";
 import { ProduceDetail } from "@/pages/ProduceDetail";
+import { PaymentCallback } from "@/pages/PaymentCallback";
 import { FarmerListings } from "@/pages/FarmerListings";
 import { NewListing } from "@/pages/NewListing";
 import { FreshRescue } from "@/pages/FreshRescue";
@@ -29,6 +30,7 @@ function Router() {
         <Route path="/marketplace" component={Marketplace} />
         
         <Route path="/produce/:id" component={ProduceDetail} />
+        <Route path="/payment/callback" component={PaymentCallback} />
         
         <Route path="/farmer/dashboard">
           <ProtectedRoute allowedRoles={["farmer"]}><FarmerDashboard /></ProtectedRoute>
