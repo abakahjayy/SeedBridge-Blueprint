@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "wouter";
 import { useGetOrder, useUpdateOrderStatus, getGetOrderQueryKey } from "@workspace/api-client-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useChargeMobileMoney, useSubmitPaymentOtp, useVerifyPayment } from "@/hooks/use-payment";
 import { formatCurrency, formatWeight, CROP_EMOJIS, CROP_LABELS } from "@/lib/utils";
 import { format } from "date-fns";
 import { ArrowLeft, Package, Truck, CheckCircle2, ShieldCheck, MapPin } from "lucide-react";
@@ -13,6 +15,54 @@ function OrderDetail() {
     query: { enabled: !!id, queryKey: getGetOrderQueryKey(id || "") }
   });
   const updateStatus = useUpdateOrderStatus();
+
+  // --- MoMo payment flow ---
+  const [provider, setProvider] = useState("mtn");
+  const [payPhone, setPayPhone] = useState(user?.phone || "");
+  const [otp, setOtp] = useState("");
+  const [reference, setReference] = useState(null);
+  const [awaitingOtp, setAwaitingOtp] = useState(false);
+  const charge = useChargeMobileMoney();
+  const submitOtp = useSubmitPaymentOtp();
+  const { data: verifyData } = useVerifyPayment(reference, { enabled: !!reference });
+
+  const handlePay = () => {
+    if (!id || !payPhone) return;
+    charge.mutate({ orderId: id, phone: payPhone, provider }, {
+      onSuccess: (data) => {
+        setReference(data.reference);
+        if (data.status === "send_otp") {
+          setAwaitingOtp(true);
+          toast({ title: "Enter OTP", description: data.displayText || "Check your phone for a confirmation code." });
+        } else {
+          toast({ title: "Approve on your phone", description: data.displayText || "Approve the payment prompt on your phone to complete." });
+        }
+      },
+      onError: (err) => {
+        toast({ title: "Payment Failed", description: err.message, variant: "destructive" });
+      }
+    });
+  };
+
+  const handleSubmitOtp = () => {
+    if (!reference || !otp) return;
+    submitOtp.mutate({ reference, otp }, {
+      onError: (err) => {
+        toast({ title: "OTP Failed", description: err.message, variant: "destructive" });
+      }
+    });
+  };
+
+  // Once verification confirms success, refresh the order so paymentStatus updates.
+  useEffect(() => {
+    if (verifyData?.status === "success" && reference) {
+      setReference(null);
+      setAwaitingOtp(false);
+      refetch();
+      toast({ title: "Payment Received", description: "MoMo payment confirmed." });
+    }
+  }, [verifyData?.status, reference]);
+
   const handleUpdateStatus = (status) => {
     if (!id) return;
     updateStatus.mutate({ id, data: { status } }, {
@@ -112,19 +162,68 @@ function OrderDetail() {
             </div>
           </div>
 
-          {
-    /* Escrow Status */
+         {
+    /* Escrow Status / Pay Now */
   }
           <div className="p-6 border-b bg-secondary/5">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-4">
               <ShieldCheck className="h-6 w-6 text-secondary" />
               <div>
                 <div className="font-serif font-bold">MoMo Escrow Status</div>
                 <div className="text-sm text-muted-foreground capitalize">{order.paymentStatus?.replace("_", " ") || "Unpaid"}</div>
               </div>
             </div>
-          </div>
 
+            {user?.role === "buyer" && order.paymentStatus === "unpaid" && !awaitingOtp && <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-2">
+                  {[{ id: "mtn", label: "MTN" }, { id: "vod", label: "Telecel" }, { id: "atl", label: "AirtelTigo" }].map((p) => <button
+    key={p.id}
+    type="button"
+    onClick={() => setProvider(p.id)}
+    className={`py-2 rounded-lg text-sm font-semibold border transition-colors ${provider === p.id ? "bg-primary text-primary-foreground border-primary" : "bg-background border-muted-foreground/30"}`}
+  >
+                      {p.label}
+                    </button>)}
+                </div>
+                <input
+    type="tel"
+    value={payPhone}
+    onChange={(e) => setPayPhone(e.target.value)}
+    placeholder="MoMo phone number"
+    className="w-full px-4 py-2.5 rounded-lg border bg-background text-sm"
+  />
+                <button
+    type="button"
+    onClick={handlePay}
+    disabled={charge.isPending || !payPhone}
+    className="w-full py-2.5 bg-secondary text-secondary-foreground rounded-xl font-semibold text-sm hover:bg-secondary/90 disabled:opacity-50 transition-colors"
+  >
+                  {charge.isPending ? "Requesting payment..." : `Pay ${formatCurrency(order.totalAmount - (order.depositPaid || 0))} with MoMo`}
+                </button>
+              </div>}
+
+            {reference && !awaitingOtp && order.paymentStatus === "unpaid" && <div className="text-sm text-muted-foreground mt-3">
+                Approve the payment prompt on your phone. This page will update automatically once confirmed.
+              </div>}
+
+            {awaitingOtp && <div className="space-y-3 mt-3">
+                <input
+    type="text"
+    value={otp}
+    onChange={(e) => setOtp(e.target.value)}
+    placeholder="Enter OTP"
+    className="w-full px-4 py-2.5 rounded-lg border bg-background text-sm"
+  />
+                <button
+    type="button"
+    onClick={handleSubmitOtp}
+    disabled={submitOtp.isPending || !otp}
+    className="w-full py-2.5 bg-secondary text-secondary-foreground rounded-xl font-semibold text-sm hover:bg-secondary/90 disabled:opacity-50 transition-colors"
+  >
+                  {submitOtp.isPending ? "Confirming..." : "Confirm Payment"}
+                </button>
+              </div>}
+          </div>
           {
     /* Actions */
   }
