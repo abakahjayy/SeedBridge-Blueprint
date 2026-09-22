@@ -5,8 +5,8 @@ info:
   version: 0.1.0
   description: SeedBridge – Farmer-to-Buyer Digital Marketplace API
 servers:
-  - url: /api
-    description: Base API path
+  - url: /api/v1/seedbridge
+    description: Base API path (namespaced on the shared backend so it can't collide with any other app's routes there)
 tags:
   - name: health
     description: Health operations
@@ -37,7 +37,7 @@ paths:
                 $ref: "#/components/schemas/HealthStatus"
 
   # ─── Auth ────────────────────────────────────────────────────────────────────
-  /auth/register:
+  /auth/signup:
     post:
       operationId: register
       tags: [auth]

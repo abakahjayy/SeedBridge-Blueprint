@@ -4,21 +4,26 @@ A farmer-to-buyer digital marketplace platform for smallholder vegetable farmers
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/seedbridge run dev` — run the frontend (served at `/`)
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000, served at `/api`)
+- `pnpm --filter @workspace/seedbridge run dev` — run the frontend (served at `/`, default port 5173)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env (`artifacts/seedbridge/.env`): `VITE_API_URL` — base URL of the real backend (e.g. `http://localhost:7004`)
+
+There is no self-hosted API server or database in this repo. The backend is a separate Express/MongoDB
+project (`FullBackendd-master`), which this app's frontend talks to entirely through `VITE_API_URL`. Its
+SeedBridge routes live under `/api/v1/seedbridge/*` there — auth (phone+password, its own `SeedBridgeUser`
+collection, isolated from that backend's other apps), produce, orders, dashboard, USSD, and Paystack payment
+(including webhook support). An earlier, unfinished self-hosted `api-server` + Postgres/Drizzle stack
+(`artifacts/api-server`, `lib/db`) was scaffolded but never built out beyond a `/healthz` stub, and has been
+removed — this app was pivoted to the external backend instead.
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - Frontend: React + Vite, Tailwind CSS, shadcn/ui, wouter (routing), TanStack Query
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- Backend: external Express/MongoDB project (`FullBackendd-master`, not part of this repo), reached via `VITE_API_URL`
+- Validation: Zod (`zod/v4`)
 - API codegen: Orval (from OpenAPI spec)
 
 ## Where things live
@@ -27,11 +32,11 @@ A farmer-to-buyer digital marketplace platform for smallholder vegetable farmers
 - `artifacts/seedbridge/src/contexts/AuthContext.tsx` — auth state, token persistence, MoMo escrow token getter
 - `artifacts/seedbridge/src/components/ui/` — shadcn-style UI components (button, card, tabs, badge, input, label, skeleton, select)
 - `artifacts/seedbridge/src/lib/utils.ts` — `cn()`, crop emojis/labels, currency/weight formatters
-- `lib/api-spec/openapi.yaml` — single source of truth for all API contracts
+- `artifacts/seedbridge/src/hooks/use-payment.js` — hand-written Paystack checkout calls (not generated; payment endpoints aren't in the OpenAPI spec yet)
+- `lib/api-spec/openapi.yaml` — single source of truth for all frontend API contracts; `servers.url` points at `/api/v1/seedbridge` on the external backend
 - `lib/api-client-react/src/generated/` — generated React Query hooks (from codegen)
-- `lib/api-zod/src/generated/` — generated Zod schemas (used by backend)
-- `artifacts/api-server/src/routes/` — backend route handlers (user implements)
-- `lib/db/src/schema/` — Drizzle database schema (user implements)
+- `lib/api-zod/src/generated/` — generated Zod schemas
+- `FullBackendd-master/routes/seedbridge*.js`, `controllers/seedbridge*.js`, `models/SeedBridge*.js` — the actual backend implementation, in the separate `FullBackendd-master` repo
 
 ## Architecture decisions
 

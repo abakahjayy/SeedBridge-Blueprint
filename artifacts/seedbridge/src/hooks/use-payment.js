@@ -9,12 +9,24 @@ import { customFetch } from "@workspace/api-client-react/custom-fetch";
 // produce purchase. Returns { authorizationUrl, reference }; the caller
 // should redirect the browser to authorizationUrl (window.location.href =
 // ..., NOT a SPA navigation, since it's an external Paystack page).
+//
+// callbackUrl is wherever THIS app is actually running - the backend
+// validates it against ALLOWED_REDIRECT_DOMAINS the same way Google login
+// does, so this app always lands back on itself after paying rather than a
+// hardcoded default.
 export function useInitializeCheckout() {
   return useMutation({
     mutationFn: ({ produceId, quantityKg, deliveryAddress, notes, isDeposit }) =>
-      customFetch("/api/v1/payments/initialize", {
+      customFetch("/api/v1/seedbridge/payments/initialize", {
         method: "POST",
-        body: JSON.stringify({ produceId, quantityKg, deliveryAddress, notes, isDeposit }),
+        body: JSON.stringify({
+          produceId,
+          quantityKg,
+          deliveryAddress,
+          notes,
+          isDeposit,
+          callbackUrl: `${window.location.origin}/payment/callback`,
+        }),
         responseType: "json",
       }),
   });
@@ -27,7 +39,7 @@ export function useFinalizeOrder(reference, { enabled = true } = {}) {
   return useQuery({
     queryKey: ["finalizeOrder", reference],
     queryFn: () =>
-      customFetch(`/api/v1/payments/finalize/${reference}`, {
+      customFetch(`/api/v1/seedbridge/payments/finalize/${reference}`, {
         method: "GET",
         responseType: "json",
       }),

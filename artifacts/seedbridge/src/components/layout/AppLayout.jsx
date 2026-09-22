@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
-import { Home, Sprout, ShoppingCart, Truck, LogOut, LayoutDashboard, ListPlus } from "lucide-react";
+import { Home, Sprout, ShoppingCart, Truck, LogOut, LayoutDashboard, ListPlus, Briefcase } from "lucide-react";
 import { cn } from "@/components/ui/button";
 function AppLayout({ children }) {
   const { user, logout } = useAuth();
@@ -33,6 +33,16 @@ function AppLayout({ children }) {
           </nav>
 
           <div className="flex items-center gap-4">
+            <a
+              href="https://portfolio-8jmo.onrender.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="Developer portfolio"
+              title="Developer portfolio"
+            >
+              <Briefcase className="h-5 w-5" />
+            </a>
             {user ? <div className="flex items-center gap-3">
                 <Link href="/profile" className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
                   <div className="h-8 w-8 rounded-full bg-accent/20 border border-accent flex items-center justify-center text-accent-foreground font-bold">
